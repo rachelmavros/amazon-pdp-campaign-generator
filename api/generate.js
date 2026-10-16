@@ -131,30 +131,45 @@ async function callClaude(body) {
 }
 const toolInput = (resp, name) => resp.content?.find((c) => c.type === "tool_use" && c.name === name)?.input;
 
+// Some models don't allow forcing a specific tool, so we ask nicely ("auto"),
+// accept JSON in plain text as a fallback, and nudge once if neither came back.
+function jsonFromText(resp) {
+  const t = (resp.content || []).filter((c) => c.type === "text").map((c) => c.text).join("\n");
+  const a = t.indexOf("{"), b = t.lastIndexOf("}");
+  if (a < 0 || b <= a) return null;
+  try { return JSON.parse(t.slice(a, b + 1)); } catch { return null; }
+}
+async function callForTool({ tool, maxTokens, userText }) {
+  const messages = [{ role: "user", content: `${userText}\n\nRespond only by calling the ${tool.name} tool.` }];
+  const base = { model: MODEL, max_tokens: maxTokens, system: SYSTEM, tools: [tool], tool_choice: { type: "auto" } };
+  let resp = await callClaude({ ...base, messages });
+  let out = toolInput(resp, tool.name) || jsonFromText(resp);
+  if (out) return out;
+  if (resp.stop_reason === "max_tokens") throw new Error("Claude ran out of room before finishing. Try again, or shorten the clip.");
+  messages.push({ role: "assistant", content: resp.content }, { role: "user", content: `Call the ${tool.name} tool now with the complete result.` });
+  resp = await callClaude({ ...base, messages });
+  return toolInput(resp, tool.name) || jsonFromText(resp);
+}
+
 async function generate({ clip, competitors, instructions }) {
   let user = `Here is the clipped Amazon PDP:\n\n<pdp>\n${clip}\n</pdp>`;
   if (competitors) user += `\n\nAlso add Competitor keyword themes for: ${competitors}`;
   if (instructions) user += `\n\nAdditional instructions from the marketer: ${instructions}`;
 
-  const resp = await callClaude({
-    model: MODEL, max_tokens: 16000, system: SYSTEM,
-    tools: [CAMPAIGN_TOOL], tool_choice: { type: "tool", name: "submit_campaign" },
-    messages: [{ role: "user", content: user }],
-  });
-  const doc = toolInput(resp, "submit_campaign");
-  if (!doc) throw new Error("Claude did not return a campaign. Try again.");
+  const doc = await callForTool({ tool: CAMPAIGN_TOOL, maxTokens: 16000, userText: user });
+  if (!doc || !Array.isArray(doc.rsa)) throw new Error("Claude did not return a campaign. Try again.");
+  doc.sitelinks ||= []; doc.callouts ||= []; doc.keywords ||= []; doc.pdp_issues ||= [];
 
   // Up to 2 rounds of targeted fixes for anything over a character limit.
   for (let round = 0; round < 2; round++) {
     const v = findViolations(doc);
     if (!v.length) break;
     const list = v.map((x) => `${x.path} (${x.length}/${x.limit} chars): ${x.text}`).join("\n");
-    const fix = await callClaude({
-      model: MODEL, max_tokens: 4000, system: SYSTEM,
-      tools: [FIX_TOOL], tool_choice: { type: "tool", name: "submit_fixes" },
-      messages: [{ role: "user", content: `These ad assets are over their Google Ads character limits. Rewrite each one to fit its limit (count every character, ® and ™ count as 1) while keeping the same claim and PDP wording. Do not add new claims.\n\n${list}` }],
+    const fix = await callForTool({
+      tool: FIX_TOOL, maxTokens: 4000,
+      userText: `These ad assets are over their Google Ads character limits. Rewrite each one to fit its limit (count every character, ® and ™ count as 1) while keeping the same claim and PDP wording. Do not add new claims. Use the exact path shown for each item.\n\n${list}`,
     });
-    (toolInput(fix, "submit_fixes")?.fixes || []).forEach((f) => applyFix(doc, f.path, f.text));
+    (fix?.fixes || []).forEach((f) => applyFix(doc, f.path, f.text));
   }
   doc.violations = findViolations(doc);
   doc.model = MODEL;
