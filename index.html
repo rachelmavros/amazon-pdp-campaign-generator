@@ -6,65 +6,65 @@
 <title>PDP Campaign Generator</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
 <style>
-  :root{--bg:#f6f7f9;--card:#fff;--ink:#1d2330;--mute:#677085;--line:#dfe3ea;--acc:#2456d6;--bad:#c62828;--badbg:#fdecec;--warn:#8a5a00;--warnbg:#fff6e0;--ok:#1b7f45}
+  :root{--bg:#f6f7f9;--card:#fff;--ink:#1d2330;--mute:#677085;--line:#dfe3ea;--grid:#d4d8de;--hdr:#f1f3f5;--acc:#217346;--bad:#c62828;--badbg:#fde4e4;--warn:#8a5a00;--warnbg:#fff6e0}
   *{box-sizing:border-box}
   body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
-  header{padding:18px 24px;border-bottom:1px solid var(--line);background:var(--card);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  header{padding:16px 24px;border-bottom:1px solid var(--line);background:var(--card);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
   header h1{font-size:18px;margin:0}
   header span{color:var(--mute)}
-  main{max-width:1200px;margin:0 auto;padding:20px 16px 60px}
+  main{max-width:1600px;margin:0 auto;padding:20px 16px 60px}
   .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:16px}
   label{display:block;font-weight:600;margin:0 0 6px}
   .hint{color:var(--mute);font-weight:400;font-size:13px}
   textarea,input[type=text],input[type=password]{width:100%;border:1px solid var(--line);border-radius:6px;padding:8px 10px;font:inherit;background:#fff;color:inherit}
-  #clip{height:170px;font:12px/1.4 ui-monospace,Menlo,Consolas,monospace}
+  #clip{height:150px;font:12px/1.4 ui-monospace,Menlo,Consolas,monospace}
   .row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
   @media(max-width:700px){.row{grid-template-columns:1fr}}
   .actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:14px}
-  button{font:inherit;font-weight:600;border-radius:6px;padding:9px 16px;border:1px solid var(--acc);background:var(--acc);color:#fff;cursor:pointer}
-  button.sec{background:#fff;color:var(--acc)}
+  button,.btn{font:inherit;font-weight:600;border-radius:6px;padding:8px 14px;border:1px solid var(--acc);background:var(--acc);color:#fff;cursor:pointer}
+  .sec{background:#fff;color:var(--acc)}
   button:disabled{opacity:.5;cursor:default}
   #status{color:var(--mute)}
   .err{color:var(--bad);font-weight:600}
   .drop{border:1px dashed var(--line);border-radius:6px;padding:6px 10px;color:var(--mute);font-size:13px;margin-top:6px}
   .drop.over{border-color:var(--acc);color:var(--acc)}
-  .tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:14px;flex-wrap:wrap}
-  .tabs button{background:none;border:none;border-bottom:2px solid transparent;color:var(--mute);border-radius:0;padding:8px 12px}
-  .tabs button.on{color:var(--ink);border-bottom-color:var(--acc)}
-  .banner{border-radius:8px;padding:10px 12px;margin-bottom:12px}
+  .banner{border-radius:8px;padding:9px 12px;margin-bottom:10px}
   .banner.warn{background:var(--warnbg);color:var(--warn)}
   .banner.bad{background:var(--badbg);color:var(--bad)}
   .banner ul{margin:6px 0 0 18px;padding:0}
-  .meta{display:flex;gap:18px;flex-wrap:wrap;color:var(--mute);margin-bottom:12px}
+  .meta{display:flex;gap:18px;flex-wrap:wrap;color:var(--mute);margin-bottom:10px}
   .meta b{color:var(--ink)}
-  h3{margin:18px 0 8px;font-size:15px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-  h3 input{max-width:420px;font-weight:600}
-  .tbl{width:100%;border-collapse:collapse}
-  .tbl th{text-align:left;font-size:12px;color:var(--mute);font-weight:600;padding:4px 6px;border-bottom:1px solid var(--line)}
-  .tbl td{padding:3px 6px;border-bottom:1px solid #eef0f4;vertical-align:top}
-  .tbl input,.tbl textarea{border:1px solid transparent;padding:5px 6px;resize:none}
-  .tbl input:hover,.tbl input:focus,.tbl textarea:hover,.tbl textarea:focus{border-color:var(--line)}
-  tr.over .t{background:var(--badbg)}
-  .sl{table-layout:fixed}
-  .sl col.c{width:54px}.sl col.u{width:15%}.sl col.s{width:19%}
-  .n{width:52px;text-align:right;font-variant-numeric:tabular-nums;color:var(--mute);white-space:nowrap;padding-top:9px!important}
-  .n.over{color:var(--bad);font-weight:700}
-  tr.over input.t{background:var(--badbg)}
-  .note{color:var(--warn);font-size:12px}
-  .note.mlr{font-weight:600}
-  .del{background:none;border:none;color:var(--mute);padding:4px 6px;font-weight:400}
-  .del:hover{color:var(--bad)}
-  .add{margin-top:6px;padding:4px 10px;font-size:13px}
-  .kw textarea{height:180px;font:12px/1.5 ui-monospace,Menlo,Consolas,monospace}
-  .kwgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px}
-  .hidden{display:none}
+  .hidden{display:none!important}
+  /* spreadsheet */
+  .tabs{display:flex;gap:2px;margin-top:12px}
+  .tabs button{background:var(--hdr);color:var(--ink);border:1px solid var(--grid);border-bottom:none;border-radius:6px 6px 0 0;font-weight:500;padding:6px 14px}
+  .tabs button.on{background:#fff;color:var(--acc);font-weight:700;box-shadow:inset 0 2px 0 var(--acc)}
+  .sheetwrap{border:1px solid var(--grid);overflow:auto;max-height:72vh;background:#fff}
+  table.sheet{border-collapse:collapse;table-layout:fixed;font:13px/1.35 Calibri,Carlito,"Segoe UI",Arial,sans-serif}
+  .sheet td,.sheet th{border:1px solid var(--grid);padding:3px 6px;vertical-align:top;overflow:hidden;white-space:pre-wrap;word-break:break-word}
+  .sheet thead th{position:sticky;top:0;background:var(--hdr);color:var(--mute);font-weight:500;text-align:center;z-index:1;padding:2px}
+  .sheet td.b,.sheet td.i,.sheet td.red{white-space:nowrap;text-overflow:ellipsis}
+  .sheet td.b{font-weight:700}
+  .sheet td.i{font-style:italic;color:#666}
+  .sheet td.red{font-weight:700;color:#c00000}
+  .sheet td.theme{color:#444}
+  .sheet td.num{text-align:right;color:var(--mute);font-variant-numeric:tabular-nums}
+  .sheet td.num.over{color:var(--bad);font-weight:700}
+  .sheet td.note{color:var(--warn);font-size:12px}
+  .sheet td.note.mlr{font-weight:600}
+  .sheet td[contenteditable]{cursor:text}
+  .sheet td[contenteditable]:hover{background:#f7faf8}
+  .sheet td[contenteditable]:focus{outline:2px solid var(--acc);outline-offset:-2px;background:#fff}
+  .sheet td.over{background:var(--badbg)}
+  .sheet tr.ghost td[contenteditable]:empty::before{content:attr(data-ph);color:#b8bec8}
+  .tip{color:var(--mute);font-size:12px;margin-top:6px}
 </style>
 </head>
 <body>
 <header><h1>PDP Campaign Generator</h1><span>Amazon product page → Google Ads submission doc (draft for MLR)</span></header>
 <main>
   <section class="card">
-    <label for="clip">1. Paste the page clip <span class="hint">— from Obsidian Web Clipper (or any copy of the Amazon page text)</span></label>
+    <label for="clip">Paste the page clip <span class="hint">— from Obsidian Web Clipper (or any copy of the Amazon page text)</span></label>
     <textarea id="clip" placeholder="Paste the clipped Amazon PDP here…"></textarea>
     <div class="drop" id="drop">…or drop / choose a .md or .txt file: <input type="file" id="file" accept=".md,.txt,text/plain,text/markdown"></div>
     <div class="row">
@@ -74,6 +74,7 @@
     <div class="row hidden" id="pwrow"><div><label for="pw">App password</label><input type="password" id="pw"></div></div>
     <div class="actions">
       <button id="go">Generate campaign</button>
+      <label class="btn sec" style="margin:0">Open saved JSON <input type="file" id="ljson" accept=".json" class="hidden"></label>
       <span id="status"></span>
     </div>
   </section>
@@ -81,21 +82,22 @@
   <section class="card hidden" id="out">
     <div class="meta" id="meta"></div>
     <div id="banners"></div>
-    <div class="actions" style="margin:0 0 14px"><button id="dl">Download .xlsx</button><button class="sec" id="dljson">Save JSON</button><label class="sec" style="margin:0;font-weight:600;color:var(--acc);cursor:pointer">Open JSON <input type="file" id="ljson" accept=".json" class="hidden"></label></div>
-    <div class="tabs" id="tabs"><button data-t="ads" class="on">Responsive Search Ads</button><button data-t="ext">Ad Extensions</button><button data-t="kw">Keywords</button></div>
-    <div id="ads"></div><div id="ext" class="hidden"></div><div id="kw" class="hidden"></div>
+    <div class="actions" style="margin:0"><button id="dl">Download .xlsx</button><button class="sec" id="dljson">Save JSON</button></div>
+    <div class="tabs" id="tabs"><button data-s="rsa" class="on">Responsive Search Ads</button><button data-s="ext">Ad Extensions</button><button data-s="kw">Keywords</button></div>
+    <div class="sheetwrap"><table class="sheet" id="sheet"></table></div>
+    <div class="tip">Click any white cell to edit. Enter moves down. Type in the empty row at the bottom of a block to add an item. Paste several lines from Excel to fill down. Clear a cell to remove that item (empty items are dropped on download).</div>
   </section>
 </main>
 <script>
 const L={headline:30,description:90,sitelink:25,sitelinkDesc:35,callout:25};
 const len=s=>[...(s||"")].length;
-let doc=null;
 const $=id=>document.getElementById(id);
-const el=(tag,props={},...kids)=>{const e=document.createElement(tag);Object.assign(e,props);kids.forEach(k=>e.append(k));return e};
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+let doc=null, sheet="rsa";
 
 try{const p=localStorage.getItem("pdpgen_pw");if(p){$("pw").value=p;$("pwrow").classList.remove("hidden")}}catch(e){}
 
-// --- clip cleanup: drop ads, buy-box JSON, and the customer review sections (claims must come from the brand, not reviews)
+// ---------- input ----------
 function cleanClip(t){
   t=t.replace(/<iframe[\s\S]*?<\/iframe>/g,"");
   t=t.split("\n").filter(l=>!/^\{"desktop\\?_buybox/.test(l.trim())&&!/^(Sending feedback|Report|Brief content visible|Full content visible|We'll check if this review)/.test(l.trim())).join("\n");
@@ -104,8 +106,6 @@ function cleanClip(t){
   else if(a>-1){const c=t.slice(a).search(/^## (?!#)/m); t=t.slice(0,a)+(c>0?t.slice(a+c):"");}
   return t.replace(/\n{3,}/g,"\n\n").trim();
 }
-
-// --- file input / drop
 function readFile(f){const r=new FileReader();r.onload=()=>{$("clip").value=r.result};r.readAsText(f)}
 $("file").onchange=e=>e.target.files[0]&&readFile(e.target.files[0]);
 const drop=$("drop");
@@ -113,7 +113,6 @@ const drop=$("drop");
 ["dragleave","drop"].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove("over")}));
 drop.addEventListener("drop",e=>e.dataTransfer.files[0]&&readFile(e.dataTransfer.files[0]));
 
-// --- generate
 $("go").onclick=async()=>{
   const clip=cleanClip($("clip").value);
   if(clip.length<200){$("status").innerHTML='<span class="err">Paste the page clip first.</span>';return}
@@ -121,143 +120,182 @@ $("go").onclick=async()=>{
   const tick=setInterval(()=>{$("status").textContent=`Generating… ${Math.round((Date.now()-t0)/1000)}s (usually 1–3 minutes)`},1000);
   try{
     const r=await fetch("/api/generate",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({clip,competitors:$("comp").value.trim(),instructions:$("instr").value.trim(),password:$("pw").value})});
-    const txt=await r.text(); let data; try{data=JSON.parse(txt)}catch(e){throw new Error(r.status===504?"The server timed out. Try again, or raise the function time limit in Vercel.":"Unexpected server response ("+r.status+").")}
+    const txt=await r.text(); let data;
+    try{data=JSON.parse(txt)}catch(e){throw new Error(r.status===504?"The server timed out. Try again, or raise the function time limit in Vercel.":"Unexpected server response ("+r.status+").")}
     if(r.status===401){$("pwrow").classList.remove("hidden");throw new Error(data.error||"Password required.")}
     if(!r.ok) throw new Error(data.error||("Error "+r.status));
     try{localStorage.setItem("pdpgen_pw",$("pw").value)}catch(e){}
-    doc=data; render(); $("out").scrollIntoView({behavior:"smooth"});
+    load(data); $("out").scrollIntoView({behavior:"smooth"});
     $("status").textContent=`Done in ${Math.round((Date.now()-t0)/1000)}s.`;
   }catch(e){$("status").innerHTML=`<span class="err">${esc(e.message)}</span>`}
   finally{clearInterval(tick);$("go").disabled=false}
 };
-const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
-// --- tabs
-$("tabs").onclick=e=>{const t=e.target.dataset.t;if(!t)return;[...$("tabs").children].forEach(b=>b.classList.toggle("on",b.dataset.t===t));["ads","ext","kw"].forEach(id=>$(id).classList.toggle("hidden",id!==t))};
+// ---------- model ----------
+function load(d){
+  d.rsa=(d.rsa||[]).map(t=>({theme:t.theme||"",display_url:t.display_url||"",headlines:(t.headlines||[]).map(x=>({...x})),descriptions:(t.descriptions||[]).map(x=>({...x}))}));
+  d.sitelinks=d.sitelinks||[]; d.callouts=d.callouts||[]; d.pdp_issues=d.pdp_issues||[];
+  if(!d.kwRows){const lp=`https://www.amazon.com/dp/${d.asin}`;d.kwRows=(d.keywords||[]).flatMap(g=>(g.keywords||[]).map(k=>({theme:g.theme,kw:k,lp:g.landing_page||lp,msg:g.ad_message||"",note:g.note||""})))}
+  delete d.keywords; doc=d; render();
+}
+const at=(arr,i)=>{while(arr.length<=i)arr.push({text:""});return arr[i]};
+function compact(){
+  doc.rsa.forEach(t=>{t.headlines=t.headlines.filter(x=>x.text?.trim());t.descriptions=t.descriptions.filter(x=>x.text?.trim())});
+  doc.sitelinks=doc.sitelinks.filter(s=>(s.text||"").trim()||(s.d1||"").trim()||(s.d2||"").trim());
+  doc.callouts=doc.callouts.filter(c=>c.text?.trim());
+  doc.kwRows=doc.kwRows.filter(k=>k.kw?.trim());
+}
 
-// --- rendering
-function countCell(text,limit){const n=len(text);return el("td",{className:"n"+(n>limit?" over":""),textContent:`${n}/${limit}`})}
-function noteEl(n){return n?el("div",{className:"note"+(/^MLR/i.test(n)?" mlr":""),textContent:n}):""}
+// ---------- sheet definitions (shared by the grid and the .xlsx export) ----------
+// Cell spec: {v} static | {get,set,limit?,ph?} editable | {count:()=>text,limit} | style: b,i,red,theme,note
+const COLS={rsa:{cols:"ABCDEFGHIJKLM",w:[22,190,230,46,66,14,470,46,66,14,170,300,300]},
+            ext:{cols:"ABCDEFGHIJ",w:[22,190,44,14,250,44,250,44,280,320]},
+            kw:{cols:"ABCDEF",w:[22,250,250,280,150,320]}};
+const ed=(obj,key,o={})=>({get:()=>obj[key]||"",set:v=>obj[key]=v,...o});
+const topRows=hl=>[{B:{v:"MMLR #"}},{B:{v:hl}},{B:{v:`DRAFT – generated from Amazon PDP ${doc.asin}; all copy pending MLR review`,style:"red"}},{}];
+function rows(s){
+  const R=[];
+  if(s==="rsa"){
+    R.push(...topRows("Highlight = New Component"));
+    doc.rsa.forEach(t=>{
+      R.push({B:{v:"Campaign Theme",style:"b"},C:{v:"Available Headlines",style:"b"},D:{v:"Characters",style:"b"},E:{v:"Pin to Headline Position",style:"b"},G:{v:"Available Description Lines",style:"b"},H:{v:"Characters",style:"b"},I:{v:"Pin to Description Line Position (i.e. 1 or 2, if applicable)",style:"b"},K:{v:"Display URL or Display Text",style:"b"},L:{v:"Headline claim source / MLR note",style:"b"},M:{v:"Description claim source / MLR note",style:"b"}});
+      R.push({C:{v:"(Character Limit: 30)",style:"i"},E:{v:"(i.e. 1, 2, or 3, if applicable)",style:"i"},G:{v:"(Character Limit: 90)",style:"i"}});
+      const n=Math.max(t.headlines.length,t.descriptions.length);
+      const total=n+((t.headlines.length<15||t.descriptions.length<4)?1:0);
+      for(let i=0;i<total;i++){
+        const r={ghost:i>=n};
+        r.B={get:()=>t.theme,set:v=>t.theme=v,style:"theme",rerender:true};
+        if(i<15||i<t.headlines.length){
+          r.C={get:()=>t.headlines[i]?.text||"",set:v=>at(t.headlines,i).text=v,limit:L.headline,ph:"+ headline",paste:lines=>{t.headlines.splice(i+1,0,...lines.map(x=>({text:x})))}};
+          r.D={count:()=>t.headlines[i]?.text,limit:L.headline};
+          r.E={get:()=>t.headlines[i]?.pin||"",set:v=>at(t.headlines,i).pin=v};
+          r.L={get:()=>t.headlines[i]?.note||"",set:v=>at(t.headlines,i).note=v,style:"note"};
+        }
+        if(i<Math.max(4,t.descriptions.length)){
+          r.G={get:()=>t.descriptions[i]?.text||"",set:v=>at(t.descriptions,i).text=v,limit:L.description,ph:"+ description"};
+          r.H={count:()=>t.descriptions[i]?.text,limit:L.description};
+          r.I={get:()=>t.descriptions[i]?.pin||"",set:v=>at(t.descriptions,i).pin=v};
+          r.M={get:()=>t.descriptions[i]?.note||"",set:v=>at(t.descriptions,i).note=v,style:"note"};
+        }
+        if(i===0) r.K=ed(t,"display_url");
+        R.push(r);
+      }
+      R.push({});
+    });
+  }
+  if(s==="ext"){
+    R.push(...topRows("Highlight = New Ads"));
+    R.push({B:{v:"Sitelink Text",style:"b"},E:{v:"Sitelink Description Line 1",style:"b"},G:{v:"Sitelink Description Line 2",style:"b"},I:{v:"Destination URL",style:"b"},J:{v:"Note",style:"b"}});
+    R.push({B:{v:"(Character Limit: 25)",style:"i"},E:{v:"(Character Limit: 35)",style:"i"},G:{v:"(Character Limit: 35)",style:"i"}});
+    [...doc.sitelinks,null].forEach((x,i)=>{
+      const o=x||{};const commit=()=>{if(!x){doc.sitelinks.push(o);x=o}};
+      const e=(k,lim,ph)=>({get:()=>o[k]||"",set:v=>{commit();o[k]=v},limit:lim,ph});
+      R.push({ghost:!x,B:e("text",L.sitelink,"+ sitelink"),C:{count:()=>o.text,limit:L.sitelink},E:e("d1",L.sitelinkDesc),F:{count:()=>o.d1,limit:L.sitelinkDesc},G:e("d2",L.sitelinkDesc),H:{count:()=>o.d2,limit:L.sitelinkDesc},I:e("url"),J:{...e("note"),style:"note"}});
+    });
+    R.push({});
+    R.push({B:{v:"Callout Text",style:"b"},J:{v:"Note",style:"b"}});
+    R.push({B:{v:"(Character Limit: 25)",style:"i"}});
+    [...doc.callouts,null].forEach((x,i)=>{
+      const o=x||{};const commit=()=>{if(!x){doc.callouts.push(o);x=o}};
+      R.push({ghost:!x,B:{get:()=>o.text||"",set:v=>{commit();o.text=v},limit:L.callout,ph:"+ callout",paste:lines=>{const at0=x?doc.callouts.indexOf(x)+1:doc.callouts.length;doc.callouts.splice(at0,0,...lines.map(t=>({text:t})))}},C:{count:()=>o.text,limit:L.callout},J:{get:()=>o.note||"",set:v=>{commit();o.note=v},style:"note"}});
+    });
+  }
+  if(s==="kw"){
+    R.push(...topRows("Highlight = New Keywords"));
+    R.push({B:{v:"Keyword Theme",style:"b"},C:{v:"Keyword",style:"b"},D:{v:"Landing Page",style:"b"},E:{v:"Ad Message",style:"b"},F:{v:"Note",style:"b"}});
+    [...doc.kwRows,null].forEach(x=>{
+      const prev=doc.kwRows[doc.kwRows.length-1]||{theme:"",lp:`https://www.amazon.com/dp/${doc.asin}`,msg:""};
+      const o=x||{theme:prev.theme,kw:"",lp:prev.lp,msg:prev.msg,note:""};
+      const commit=()=>{if(!x){doc.kwRows.push(o);x=o}};
+      const e=(k,ph,st)=>({get:()=>x||k==="kw"?o[k]||"":"",set:v=>{commit();o[k]=v},ph,style:st});
+      R.push({ghost:!x,B:e("theme"),C:{...e("kw","+ keyword"),paste:lines=>{const p=x?doc.kwRows.indexOf(x)+1:doc.kwRows.length;doc.kwRows.splice(p,0,...lines.map(k=>({...o,kw:k,note:""})))}},D:e("lp"),E:e("msg"),F:e("note",null,"note")});
+    });
+  }
+  return R;
+}
+
+// ---------- grid rendering ----------
+function render(){
+  $("out").classList.remove("hidden");
+  const nk=doc.kwRows.filter(k=>k.kw).length;
+  $("meta").innerHTML=`<span>Product: <b>${esc(doc.product_name)}</b></span><span>ASIN: <b>${esc(doc.asin)}</b></span><span>Themes: <b>${doc.rsa.length}</b></span><span>Keywords: <b>${nk}</b></span>${doc.model?`<span>Model: ${esc(doc.model)}</span>`:""}`;
+  banners(); drawSheet();
+}
+function drawSheet(){
+  const {cols,w}=COLS[sheet]; const tb=$("sheet"); const scroll=tb.parentElement.scrollTop;
+  tb.innerHTML=""; tb.style.width=w.reduce((a,b)=>a+b,0)+"px";
+  const cg=document.createElement("colgroup");w.forEach(x=>{const c=document.createElement("col");c.style.width=x+"px";cg.append(c)});tb.append(cg);
+  const th=document.createElement("thead");th.innerHTML="<tr>"+[...cols].map(c=>`<th>${c}</th>`).join("")+"</tr>";tb.append(th);
+  const body=document.createElement("tbody");
+  rows(sheet).forEach(r=>{
+    const tr=document.createElement("tr"); if(r.ghost)tr.className="ghost";
+    const cells=[];
+    [...cols].forEach(c=>{
+      const s=r[c]; const td=document.createElement("td"); td.dataset.col=c;
+      if(s){
+        if(s.style) td.classList.add(s.style);
+        if(s.count){td.classList.add("num")}
+        else if(s.get){
+          td.contentEditable="plaintext-only"; td.textContent=s.get(); if(s.ph)td.dataset.ph=s.ph;
+          if(s.style==="note"&&/^MLR/i.test(td.textContent))td.classList.add("mlr");
+          td.oninput=()=>{s.set(td.innerText.replace(/\n/g," "));refreshRow(cells);bannersSoon()};
+          td.onblur=()=>{if(r.ghost&&td.textContent.trim()||s.rerender)drawSheet()};
+          td.onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();moveDown(td)}};
+          td.onpaste=e=>{const t=(e.clipboardData||window.clipboardData).getData("text");
+            const lines=t.split(/\r?\n/).map(x=>x.split("\t")[0].trim()).filter(Boolean);
+            if(lines.length>1&&s.paste){e.preventDefault();s.set(lines[0]);s.paste(lines.slice(1));drawSheet();banners()}
+            else if(lines.length){e.preventDefault();document.execCommand("insertText",false,lines.join(" "))}};
+        } else {td.textContent=s.v??"";td.title=s.v??"";if(s.style==="red")td.style.overflow="visible";}
+      }
+      cells.push({td,s}); tr.append(td);
+    });
+    refreshRow(cells); body.append(tr);
+  });
+  tb.append(body); tb.parentElement.scrollTop=scroll;
+}
+function refreshRow(cells){
+  const limits={};cells.forEach(({td,s})=>{if(s?.count){const n=len(s.count());td.textContent=n?n:"";const o=n>s.limit;td.classList.toggle("over",o)}});
+  cells.forEach(({td,s})=>{if(s?.get&&s.limit)td.classList.toggle("over",len(s.get())>s.limit)});
+}
+function moveDown(td){const tr=td.parentElement,i=[...tr.children].indexOf(td);let n=tr.nextElementSibling;while(n&&!n.children[i]?.isContentEditable)n=n.nextElementSibling;if(n)n.children[i].focus()}
+$("tabs").onclick=e=>{const s=e.target.dataset.s;if(!s)return;sheet=s;[...$("tabs").children].forEach(b=>b.classList.toggle("on",b.dataset.s===s));drawSheet()};
+
+// ---------- banners ----------
 function overCount(){let c=0;const k=(t,l)=>{if(len(t)>l)c++};
   doc.rsa.forEach(t=>{t.headlines.forEach(h=>k(h.text,L.headline));t.descriptions.forEach(d=>k(d.text,L.description))});
   doc.sitelinks.forEach(s=>{k(s.text,L.sitelink);k(s.d1,L.sitelinkDesc);k(s.d2,L.sitelinkDesc)});
   doc.callouts.forEach(c=>k(c.text,L.callout));return c}
+let bt;const bannersSoon=()=>{clearTimeout(bt);bt=setTimeout(banners,300)};
 function banners(){
-  const b=$("banners");b.innerHTML="";
-  const o=overCount();
-  if(o) b.append(el("div",{className:"banner bad",textContent:`${o} item(s) over the character limit — edit the red rows before downloading.`}));
+  const b=$("banners");let h="";
+  const o=overCount(); if(o) h+=`<div class="banner bad">${o} item(s) over the character limit — red cells.</div>`;
   const mlr=[...doc.rsa.flatMap(t=>[...t.headlines,...t.descriptions]),...doc.sitelinks,...doc.callouts].filter(x=>/^MLR/i.test(x.note||"")).length;
-  if(mlr) b.append(el("div",{className:"banner warn",textContent:`${mlr} item(s) use claims with qualifiers — see the MLR notes.`}));
-  if(doc.pdp_issues?.length){const d=el("div",{className:"banner warn"},el("b",{textContent:"Possible issues on the Amazon page:"}));const ul=el("ul");doc.pdp_issues.forEach(i=>ul.append(el("li",{textContent:i})));d.append(ul);b.append(d)}
-}
-function textRow(obj,key,limit,onDel){
-  const tr=el("tr");const inp=limit>=90?el("textarea",{className:"t",rows:2,value:obj[key]||""}):el("input",{type:"text",className:"t",value:obj[key]||""});
-  const n=countCell(obj[key],limit);
-  const upd=()=>{const c=len(obj[key]);n.textContent=`${c}/${limit}`;n.classList.toggle("over",c>limit);tr.classList.toggle("over",c>limit)};
-  inp.oninput=()=>{obj[key]=inp.value;upd();banners()};
-  upd();
-  const td=el("td",{},inp,noteEl(obj.note));
-  tr.append(td,n);
-  if(onDel) tr.append(el("td",{},el("button",{className:"del",title:"Remove",textContent:"✕",onclick:onDel})));
-  return tr;
-}
-function listTable(arr,limit,label,make){
-  const tb=el("tbody");
-  const draw=()=>{tb.innerHTML="";arr.forEach((o,i)=>tb.append(textRow(o,"text",limit,()=>{arr.splice(i,1);draw();banners()})))};
-  draw();
-  const t=el("table",{className:"tbl"},el("thead",{},el("tr",{},el("th",{textContent:`${label} (${limit} max)`}),el("th",{textContent:"Chars"}),el("th"))),tb);
-  const add=el("button",{className:"sec add",textContent:"+ Add",onclick:()=>{arr.push(make());draw();banners()}});
-  return el("div",{},t,add);
-}
-function render(){
-  $("out").classList.remove("hidden");
-  $("meta").innerHTML=`<span>Product: <b>${esc(doc.product_name)}</b></span><span>ASIN: <b>${esc(doc.asin)}</b></span><span>Themes: <b>${doc.rsa.length}</b></span><span>Keywords: <b>${doc.keywords.reduce((a,g)=>a+g.keywords.length,0)}</b></span>${doc.model?`<span>Model: ${esc(doc.model)}</span>`:""}`;
-  banners();
-  // Ads
-  const ads=$("ads");ads.innerHTML="";
-  doc.rsa.forEach(t=>{
-    const name=el("input",{type:"text",value:t.theme,oninput:e=>t.theme=e.target.value});
-    const url=el("input",{type:"text",value:t.display_url||"",oninput:e=>t.display_url=e.target.value,style:"max-width:240px;font-weight:400"});
-    ads.append(el("h3",{},name,el("span",{className:"hint",textContent:"Display URL"}),url));
-    ads.append(el("div",{className:"row",style:"margin-top:0"},
-      listTable(t.headlines,L.headline,`Headlines · ${t.headlines.length}/15`,()=>({text:""})),
-      listTable(t.descriptions,L.description,`Descriptions · ${t.descriptions.length}/4`,()=>({text:""}))));
-  });
-  // Extensions
-  const ext=$("ext");ext.innerHTML="";
-  ext.append(el("h3",{textContent:"Sitelinks"}));
-  const st=el("table",{className:"tbl sl"});
-  st.append(el("colgroup",{},el("col",{className:"s"}),el("col",{className:"c"}),el("col"),el("col",{className:"c"}),el("col"),el("col",{className:"c"}),el("col",{className:"u"})));
-  st.append(el("thead",{},el("tr",{},...["Sitelink text (25)","","Description 1 (35)","","Description 2 (35)","","Destination URL"].map(h=>el("th",{textContent:h})))));
-  const sb=el("tbody");
-  doc.sitelinks.forEach(s=>{
-    const tr=el("tr");
-    [["text",L.sitelink],["d1",L.sitelinkDesc],["d2",L.sitelinkDesc]].forEach(([k,l])=>{
-      const inp=el("input",{type:"text",className:"t",value:s[k]||""});const n=countCell(s[k],l);
-      inp.oninput=()=>{s[k]=inp.value;const c=len(s[k]);n.textContent=`${c}/${l}`;n.classList.toggle("over",c>l);banners()};
-      tr.append(el("td",{},inp,k==="text"?noteEl(s.note):""),n)});
-    const u=el("input",{type:"text",value:s.url||"",oninput:e=>s.url=e.target.value});
-    tr.append(el("td",{},u));sb.append(tr)});
-  st.append(sb);ext.append(st);
-  ext.append(el("h3",{textContent:"Callouts"}),listTable(doc.callouts,L.callout,"Callout",()=>({text:""})));
-  // Keywords
-  const kw=$("kw");kw.innerHTML="";const g=el("div",{className:"kwgrid"});
-  doc.keywords.forEach(k=>{
-    const ta=el("textarea",{value:k.keywords.join("\n")});
-    const cnt=el("span",{className:"hint",textContent:`${k.keywords.length} keywords`});
-    ta.oninput=()=>{k.keywords=ta.value.split("\n").map(s=>s.trim()).filter(Boolean);cnt.textContent=`${k.keywords.length} keywords`};
-    const name=el("input",{type:"text",value:k.theme,oninput:e=>k.theme=e.target.value});
-    const msg=el("input",{type:"text",value:k.ad_message,oninput:e=>k.ad_message=e.target.value});
-    g.append(el("div",{className:"kw"},el("label",{textContent:"Keyword theme"}),name,el("label",{textContent:"Ad message",style:"margin-top:6px"}),msg,el("label",{style:"margin-top:6px"},"Keywords ",cnt),ta,noteEl(k.note)))});
-  kw.append(g);
+  if(mlr) h+=`<div class="banner warn">${mlr} item(s) use claims with qualifiers — see the MLR notes.</div>`;
+  if(!doc.kwRows.length) h+=`<div class="banner bad">No keywords came back. Add them on the Keywords tab or generate again.</div>`;
+  if(doc.pdp_issues?.length) h+=`<div class="banner warn"><b>Possible issues on the Amazon page:</b><ul>${doc.pdp_issues.map(i=>`<li>${esc(i)}</li>`).join("")}</ul></div>`;
+  b.innerHTML=h;
 }
 
-// --- JSON save/open (to revisit a draft later)
+// ---------- save / open / export ----------
 const fname=ext=>`SEM_Submission_-_${(doc.product_name||"PDP").replace(/[^\w&-]+/g,"_").slice(0,60)}_-_DRAFT.${ext}`;
-function save(blob,name){const a=el("a",{href:URL.createObjectURL(blob),download:name});document.body.append(a);a.click();a.remove()}
-$("dljson").onclick=()=>save(new Blob([JSON.stringify(doc,null,2)],{type:"application/json"}),fname("json"));
-$("ljson").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{doc=JSON.parse(r.result);render()};r.readAsText(f)};
-
-// --- xlsx export in the SEM submission-doc layout
+function save(blob,name){const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;document.body.append(a);a.click();a.remove()}
+$("dljson").onclick=()=>{compact();drawSheet();save(new Blob([JSON.stringify(doc,null,2)],{type:"application/json"}),fname("json"))};
+$("ljson").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{load(JSON.parse(r.result));$("status").textContent="Opened "+f.name}catch(err){$("status").innerHTML='<span class="err">Not a valid saved file.</span>'}};r.readAsText(f);e.target.value=""};
 $("dl").onclick=async()=>{
+  compact(); drawSheet(); banners();
   if(overCount()&&!confirm("Some items are over the character limit. Download anyway?"))return;
-  const wb=new ExcelJS.Workbook();const B={bold:true},I={italic:true,color:{argb:"FF666666"}};
-  const pdp=`https://www.amazon.com/dp/${doc.asin}`;
-  const top=(ws,hl)=>{ws.getCell("B1").value="MMLR #";ws.getCell("B2").value=hl;const c=ws.getCell("B3");c.value=`DRAFT – generated from Amazon PDP ${doc.asin}; all copy pending MLR review`;c.font={bold:true,color:{argb:"FFC00000"}}};
-  const set=(ws,a,v,f)=>{const c=ws.getCell(a);c.value=v;if(f)c.font=f};
-  const widths=(ws,cols,w)=>cols.split("").forEach((c,i)=>ws.getColumn(c).width=w[i]);
-  // RSA
-  let ws=wb.addWorksheet("Responsive Search Ads");top(ws,"Highlight = New Component");let r=5;
-  doc.rsa.forEach(t=>{
-    ["Campaign Theme","Available Headlines","Characters","Pin to Headline Position","Available Description Lines","Characters","Pin to Description Line Position (i.e. 1 or 2, if applicable)","Display URL or Display Text","Claim source / MLR note"].forEach((v,i)=>set(ws,"BCDEGHIKL"[i]+r,v,B));
-    set(ws,"C"+(r+1),"(Character Limit: 30)",I);set(ws,"E"+(r+1),"(i.e. 1, 2, or 3, if applicable)",I);set(ws,"G"+(r+1),"(Character Limit: 90)",I);
-    r+=2;
-    const rows=Math.max(t.headlines.length,t.descriptions.length);
-    for(let i=0;i<rows;i++){
-      const h=t.headlines[i],d=t.descriptions[i],notes=[];
-      set(ws,"B"+r,t.theme);
-      if(h){set(ws,"C"+r,h.text);set(ws,"D"+r,len(h.text));if(h.note)notes.push(h.note)}
-      if(d){set(ws,"G"+r,d.text);set(ws,"H"+r,len(d.text));if(d.note)notes.push("Desc: "+d.note)}
-      if(i===0)set(ws,"K"+r,t.display_url);
-      if(notes.length)set(ws,"L"+r,[...new Set(notes)].join(" | "));
-      r++}
-    r++});
-  widths(ws,"BCDEGHIKL",[34,32,11,14,90,11,18,26,70]);
-  // Extensions
-  ws=wb.addWorksheet("Ad Extensions");top(ws,"Highlight = New Ads");
-  ["Sitelink Text","Sitelink Description Line 1","Sitelink Description Line 2","Destination URL","Note"].forEach((v,i)=>set(ws,"BEGIJ"[i]+5,v,B));
-  ["(Character Limit: 25)","(Character Limit: 35)","(Character Limit: 35)"].forEach((v,i)=>set(ws,"BEG"[i]+6,v,I));
-  r=7;
-  doc.sitelinks.forEach(s=>{set(ws,"B"+r,s.text);set(ws,"C"+r,len(s.text));set(ws,"E"+r,s.d1);set(ws,"F"+r,len(s.d1));set(ws,"G"+r,s.d2);set(ws,"H"+r,len(s.d2));set(ws,"I"+r,s.url);if(s.note)set(ws,"J"+r,s.note);r++});
-  r++;set(ws,"B"+r,"Callout Text",B);set(ws,"J"+r,"Note",B);set(ws,"B"+(r+1),"(Character Limit: 25)",I);r+=2;
-  doc.callouts.forEach(c=>{set(ws,"B"+r,c.text);set(ws,"C"+r,len(c.text));if(c.note)set(ws,"J"+r,c.note);r++});
-  widths(ws,"BCEFGHIJ",[28,6,36,6,36,6,40,60]);
-  // Keywords
-  ws=wb.addWorksheet("Keywords");top(ws,"Highlight = New Keywords");
-  ["Keyword Theme","Keyword","Landing Page","Ad Message","Note"].forEach((v,i)=>set(ws,"BCDEF"[i]+5,v,B));
-  r=6;
-  doc.keywords.forEach(g=>g.keywords.forEach(k=>{set(ws,"B"+r,g.theme);set(ws,"C"+r,k);set(ws,"D"+r,g.landing_page||pdp);set(ws,"E"+r,g.ad_message);if(g.note)set(ws,"F"+r,g.note);r++}));
-  widths(ws,"BCDEF",[36,40,38,22,70]);
+  const wb=new ExcelJS.Workbook();
+  const font={b:{bold:true},i:{italic:true,color:{argb:"FF666666"}},red:{bold:true,color:{argb:"FFC00000"}}};
+  [["rsa","Responsive Search Ads"],["ext","Ad Extensions"],["kw","Keywords"]].forEach(([s,name])=>{
+    const ws=wb.addWorksheet(name);const {cols,w}=COLS[s];
+    let rn=0;
+    rows(s).forEach(r=>{if(r.ghost)return;rn++;
+      [...cols].forEach(c=>{const sp=r[c];if(!sp)return;
+        let v=sp.count?(len(sp.count())||null):sp.get?sp.get():sp.v; if(v===""||v==null)return;
+        const cell=ws.getCell(c+rn);cell.value=v;if(font[sp.style])cell.font=font[sp.style];
+        if(sp.style==="note"||c==="G")cell.alignment={wrapText:true,vertical:"top"};});});
+    [...cols].forEach((c,i)=>ws.getColumn(c).width=Math.round(w[i]/7));
+  });
   const buf=await wb.xlsx.writeBuffer();
   save(new Blob([buf],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}),fname("xlsx"));
 };
