@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PDP Campaign Generator</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
+<style>
+  :root{--bg:#f6f7f9;--card:#fff;--ink:#1d2330;--mute:#677085;--line:#dfe3ea;--acc:#2456d6;--bad:#c62828;--badbg:#fdecec;--warn:#8a5a00;--warnbg:#fff6e0;--ok:#1b7f45}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+  header{padding:18px 24px;border-bottom:1px solid var(--line);background:var(--card);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  header h1{font-size:18px;margin:0}
+  header span{color:var(--mute)}
+  main{max-width:1200px;margin:0 auto;padding:20px 16px 60px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:16px}
+  label{display:block;font-weight:600;margin:0 0 6px}
+  .hint{color:var(--mute);font-weight:400;font-size:13px}
+  textarea,input[type=text],input[type=password]{width:100%;border:1px solid var(--line);border-radius:6px;padding:8px 10px;font:inherit;background:#fff;color:inherit}
+  #clip{height:170px;font:12px/1.4 ui-monospace,Menlo,Consolas,monospace}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+  @media(max-width:700px){.row{grid-template-columns:1fr}}
+  .actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:14px}
+  button{font:inherit;font-weight:600;border-radius:6px;padding:9px 16px;border:1px solid var(--acc);background:var(--acc);color:#fff;cursor:pointer}
+  button.sec{background:#fff;color:var(--acc)}
+  button:disabled{opacity:.5;cursor:default}
+  #status{color:var(--mute)}
+  .err{color:var(--bad);font-weight:600}
+  .drop{border:1px dashed var(--line);border-radius:6px;padding:6px 10px;color:var(--mute);font-size:13px;margin-top:6px}
+  .drop.over{border-color:var(--acc);color:var(--acc)}
+  .tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:14px;flex-wrap:wrap}
+  .tabs button{background:none;border:none;border-bottom:2px solid transparent;color:var(--mute);border-radius:0;padding:8px 12px}
+  .tabs button.on{color:var(--ink);border-bottom-color:var(--acc)}
+  .banner{border-radius:8px;padding:10px 12px;margin-bottom:12px}
+  .banner.warn{background:var(--warnbg);color:var(--warn)}
+  .banner.bad{background:var(--badbg);color:var(--bad)}
+  .banner ul{margin:6px 0 0 18px;padding:0}
+  .meta{display:flex;gap:18px;flex-wrap:wrap;color:var(--mute);margin-bottom:12px}
+  .meta b{color:var(--ink)}
+  h3{margin:18px 0 8px;font-size:15px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  h3 input{max-width:420px;font-weight:600}
+  .tbl{width:100%;border-collapse:collapse}
+  .tbl th{text-align:left;font-size:12px;color:var(--mute);font-weight:600;padding:4px 6px;border-bottom:1px solid var(--line)}
+  .tbl td{padding:3px 6px;border-bottom:1px solid #eef0f4;vertical-align:top}
+  .tbl input,.tbl textarea{border:1px solid transparent;padding:5px 6px;resize:none}
+  .tbl input:hover,.tbl input:focus,.tbl textarea:hover,.tbl textarea:focus{border-color:var(--line)}
+  tr.over .t{background:var(--badbg)}
+  .sl{table-layout:fixed}
+  .sl col.c{width:54px}.sl col.u{width:15%}.sl col.s{width:19%}
+  .n{width:52px;text-align:right;font-variant-numeric:tabular-nums;color:var(--mute);white-space:nowrap;padding-top:9px!important}
+  .n.over{color:var(--bad);font-weight:700}
+  tr.over input.t{background:var(--badbg)}
+  .note{color:var(--warn);font-size:12px}
+  .note.mlr{font-weight:600}
+  .del{background:none;border:none;color:var(--mute);padding:4px 6px;font-weight:400}
+  .del:hover{color:var(--bad)}
+  .add{margin-top:6px;padding:4px 10px;font-size:13px}
+  .kw textarea{height:180px;font:12px/1.5 ui-monospace,Menlo,Consolas,monospace}
+  .kwgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px}
+  .hidden{display:none}
+</style>
+</head>
+<body>
+<header><h1>PDP Campaign Generator</h1><span>Amazon product page → Google Ads submission doc (draft for MLR)</span></header>
+<main>
+  <section class="card">
+    <label for="clip">1. Paste the page clip <span class="hint">— from Obsidian Web Clipper (or any copy of the Amazon page text)</span></label>
+    <textarea id="clip" placeholder="Paste the clipped Amazon PDP here…"></textarea>
+    <div class="drop" id="drop">…or drop / choose a .md or .txt file: <input type="file" id="file" accept=".md,.txt,text/plain,text/markdown"></div>
+    <div class="row">
+      <div><label for="comp">Competitors <span class="hint">(optional, comma-separated)</span></label><input type="text" id="comp" placeholder="e.g. Orgain Kids, Carnation Breakfast Essentials"></div>
+      <div><label for="instr">Extra instructions <span class="hint">(optional)</span></label><input type="text" id="instr" placeholder="e.g. skip the caffeine flavors; add a Non-Brand - Diabetes theme"></div>
+    </div>
+    <div class="row hidden" id="pwrow"><div><label for="pw">App password</label><input type="password" id="pw"></div></div>
+    <div class="actions">
+      <button id="go">Generate campaign</button>
+      <span id="status"></span>
+    </div>
+  </section>
+
+  <section class="card hidden" id="out">
+    <div class="meta" id="meta"></div>
+    <div id="banners"></div>
+    <div class="actions" style="margin:0 0 14px"><button id="dl">Download .xlsx</button><button class="sec" id="dljson">Save JSON</button><label class="sec" style="margin:0;font-weight:600;color:var(--acc);cursor:pointer">Open JSON <input type="file" id="ljson" accept=".json" class="hidden"></label></div>
+    <div class="tabs" id="tabs"><button data-t="ads" class="on">Responsive Search Ads</button><button data-t="ext">Ad Extensions</button><button data-t="kw">Keywords</button></div>
+    <div id="ads"></div><div id="ext" class="hidden"></div><div id="kw" class="hidden"></div>
+  </section>
+</main>
+<script>
+const L={headline:30,description:90,sitelink:25,sitelinkDesc:35,callout:25};
+const len=s=>[...(s||"")].length;
+let doc=null;
+const $=id=>document.getElementById(id);
+const el=(tag,props={},...kids)=>{const e=document.createElement(tag);Object.assign(e,props);kids.forEach(k=>e.append(k));return e};
+
+try{const p=localStorage.getItem("pdpgen_pw");if(p){$("pw").value=p;$("pwrow").classList.remove("hidden")}}catch(e){}
+
+// --- clip cleanup: drop ads, buy-box JSON, and the customer review sections (claims must come from the brand, not reviews)
+function cleanClip(t){
+  t=t.replace(/<iframe[\s\S]*?<\/iframe>/g,"");
+  t=t.split("\n").filter(l=>!/^\{"desktop\\?_buybox/.test(l.trim())&&!/^(Sending feedback|Report|Brief content visible|Full content visible|We'll check if this review)/.test(l.trim())).join("\n");
+  const a=t.search(/^#{2,4} Customers say/m), b=t.search(/^## Product Summary/m);
+  if(a>-1&&b>a) t=t.slice(0,a)+t.slice(b);
+  else if(a>-1){const c=t.slice(a).search(/^## (?!#)/m); t=t.slice(0,a)+(c>0?t.slice(a+c):"");}
+  return t.replace(/\n{3,}/g,"\n\n").trim();
+}
+
+// --- file input / drop
+function readFile(f){const r=new FileReader();r.onload=()=>{$("clip").value=r.result};r.readAsText(f)}
+$("file").onchange=e=>e.target.files[0]&&readFile(e.target.files[0]);
+const drop=$("drop");
+["dragover","dragenter"].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add("over")}));
+["dragleave","drop"].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove("over")}));
+drop.addEventListener("drop",e=>e.dataTransfer.files[0]&&readFile(e.dataTransfer.files[0]));
+
+// --- generate
+$("go").onclick=async()=>{
+  const clip=cleanClip($("clip").value);
+  if(clip.length<200){$("status").innerHTML='<span class="err">Paste the page clip first.</span>';return}
+  $("go").disabled=true; const t0=Date.now();
+  const tick=setInterval(()=>{$("status").textContent=`Generating… ${Math.round((Date.now()-t0)/1000)}s (usually 1–3 minutes)`},1000);
+  try{
+    const r=await fetch("/api/generate",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({clip,competitors:$("comp").value.trim(),instructions:$("instr").value.trim(),password:$("pw").value})});
+    const txt=await r.text(); let data; try{data=JSON.parse(txt)}catch(e){throw new Error(r.status===504?"The server timed out. Try again, or raise the function time limit in Vercel.":"Unexpected server response ("+r.status+").")}
+    if(r.status===401){$("pwrow").classList.remove("hidden");throw new Error(data.error||"Password required.")}
+    if(!r.ok) throw new Error(data.error||("Error "+r.status));
+    try{localStorage.setItem("pdpgen_pw",$("pw").value)}catch(e){}
+    doc=data; render(); $("out").scrollIntoView({behavior:"smooth"});
+    $("status").textContent=`Done in ${Math.round((Date.now()-t0)/1000)}s.`;
+  }catch(e){$("status").innerHTML=`<span class="err">${esc(e.message)}</span>`}
+  finally{clearInterval(tick);$("go").disabled=false}
+};
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+// --- tabs
+$("tabs").onclick=e=>{const t=e.target.dataset.t;if(!t)return;[...$("tabs").children].forEach(b=>b.classList.toggle("on",b.dataset.t===t));["ads","ext","kw"].forEach(id=>$(id).classList.toggle("hidden",id!==t))};
+
+// --- rendering
+function countCell(text,limit){const n=len(text);return el("td",{className:"n"+(n>limit?" over":""),textContent:`${n}/${limit}`})}
+function noteEl(n){return n?el("div",{className:"note"+(/^MLR/i.test(n)?" mlr":""),textContent:n}):""}
+function overCount(){let c=0;const k=(t,l)=>{if(len(t)>l)c++};
+  doc.rsa.forEach(t=>{t.headlines.forEach(h=>k(h.text,L.headline));t.descriptions.forEach(d=>k(d.text,L.description))});
+  doc.sitelinks.forEach(s=>{k(s.text,L.sitelink);k(s.d1,L.sitelinkDesc);k(s.d2,L.sitelinkDesc)});
+  doc.callouts.forEach(c=>k(c.text,L.callout));return c}
+function banners(){
+  const b=$("banners");b.innerHTML="";
+  const o=overCount();
+  if(o) b.append(el("div",{className:"banner bad",textContent:`${o} item(s) over the character limit — edit the red rows before downloading.`}));
+  const mlr=[...doc.rsa.flatMap(t=>[...t.headlines,...t.descriptions]),...doc.sitelinks,...doc.callouts].filter(x=>/^MLR/i.test(x.note||"")).length;
+  if(mlr) b.append(el("div",{className:"banner warn",textContent:`${mlr} item(s) use claims with qualifiers — see the MLR notes.`}));
+  if(doc.pdp_issues?.length){const d=el("div",{className:"banner warn"},el("b",{textContent:"Possible issues on the Amazon page:"}));const ul=el("ul");doc.pdp_issues.forEach(i=>ul.append(el("li",{textContent:i})));d.append(ul);b.append(d)}
+}
+function textRow(obj,key,limit,onDel){
+  const tr=el("tr");const inp=limit>=90?el("textarea",{className:"t",rows:2,value:obj[key]||""}):el("input",{type:"text",className:"t",value:obj[key]||""});
+  const n=countCell(obj[key],limit);
+  const upd=()=>{const c=len(obj[key]);n.textContent=`${c}/${limit}`;n.classList.toggle("over",c>limit);tr.classList.toggle("over",c>limit)};
+  inp.oninput=()=>{obj[key]=inp.value;upd();banners()};
+  upd();
+  const td=el("td",{},inp,noteEl(obj.note));
+  tr.append(td,n);
+  if(onDel) tr.append(el("td",{},el("button",{className:"del",title:"Remove",textContent:"✕",onclick:onDel})));
+  return tr;
+}
+function listTable(arr,limit,label,make){
+  const tb=el("tbody");
+  const draw=()=>{tb.innerHTML="";arr.forEach((o,i)=>tb.append(textRow(o,"text",limit,()=>{arr.splice(i,1);draw();banners()})))};
+  draw();
+  const t=el("table",{className:"tbl"},el("thead",{},el("tr",{},el("th",{textContent:`${label} (${limit} max)`}),el("th",{textContent:"Chars"}),el("th"))),tb);
+  const add=el("button",{className:"sec add",textContent:"+ Add",onclick:()=>{arr.push(make());draw();banners()}});
+  return el("div",{},t,add);
+}
+function render(){
+  $("out").classList.remove("hidden");
+  $("meta").innerHTML=`<span>Product: <b>${esc(doc.product_name)}</b></span><span>ASIN: <b>${esc(doc.asin)}</b></span><span>Themes: <b>${doc.rsa.length}</b></span><span>Keywords: <b>${doc.keywords.reduce((a,g)=>a+g.keywords.length,0)}</b></span>${doc.model?`<span>Model: ${esc(doc.model)}</span>`:""}`;
+  banners();
+  // Ads
+  const ads=$("ads");ads.innerHTML="";
+  doc.rsa.forEach(t=>{
+    const name=el("input",{type:"text",value:t.theme,oninput:e=>t.theme=e.target.value});
+    const url=el("input",{type:"text",value:t.display_url||"",oninput:e=>t.display_url=e.target.value,style:"max-width:240px;font-weight:400"});
+    ads.append(el("h3",{},name,el("span",{className:"hint",textContent:"Display URL"}),url));
+    ads.append(el("div",{className:"row",style:"margin-top:0"},
+      listTable(t.headlines,L.headline,`Headlines · ${t.headlines.length}/15`,()=>({text:""})),
+      listTable(t.descriptions,L.description,`Descriptions · ${t.descriptions.length}/4`,()=>({text:""}))));
+  });
+  // Extensions
+  const ext=$("ext");ext.innerHTML="";
+  ext.append(el("h3",{textContent:"Sitelinks"}));
+  const st=el("table",{className:"tbl sl"});
+  st.append(el("colgroup",{},el("col",{className:"s"}),el("col",{className:"c"}),el("col"),el("col",{className:"c"}),el("col"),el("col",{className:"c"}),el("col",{className:"u"})));
+  st.append(el("thead",{},el("tr",{},...["Sitelink text (25)","","Description 1 (35)","","Description 2 (35)","","Destination URL"].map(h=>el("th",{textContent:h})))));
+  const sb=el("tbody");
+  doc.sitelinks.forEach(s=>{
+    const tr=el("tr");
+    [["text",L.sitelink],["d1",L.sitelinkDesc],["d2",L.sitelinkDesc]].forEach(([k,l])=>{
+      const inp=el("input",{type:"text",className:"t",value:s[k]||""});const n=countCell(s[k],l);
+      inp.oninput=()=>{s[k]=inp.value;const c=len(s[k]);n.textContent=`${c}/${l}`;n.classList.toggle("over",c>l);banners()};
+      tr.append(el("td",{},inp,k==="text"?noteEl(s.note):""),n)});
+    const u=el("input",{type:"text",value:s.url||"",oninput:e=>s.url=e.target.value});
+    tr.append(el("td",{},u));sb.append(tr)});
+  st.append(sb);ext.append(st);
+  ext.append(el("h3",{textContent:"Callouts"}),listTable(doc.callouts,L.callout,"Callout",()=>({text:""})));
+  // Keywords
+  const kw=$("kw");kw.innerHTML="";const g=el("div",{className:"kwgrid"});
+  doc.keywords.forEach(k=>{
+    const ta=el("textarea",{value:k.keywords.join("\n")});
+    const cnt=el("span",{className:"hint",textContent:`${k.keywords.length} keywords`});
+    ta.oninput=()=>{k.keywords=ta.value.split("\n").map(s=>s.trim()).filter(Boolean);cnt.textContent=`${k.keywords.length} keywords`};
+    const name=el("input",{type:"text",value:k.theme,oninput:e=>k.theme=e.target.value});
+    const msg=el("input",{type:"text",value:k.ad_message,oninput:e=>k.ad_message=e.target.value});
+    g.append(el("div",{className:"kw"},el("label",{textContent:"Keyword theme"}),name,el("label",{textContent:"Ad message",style:"margin-top:6px"}),msg,el("label",{style:"margin-top:6px"},"Keywords ",cnt),ta,noteEl(k.note)))});
+  kw.append(g);
+}
+
+// --- JSON save/open (to revisit a draft later)
+const fname=ext=>`SEM_Submission_-_${(doc.product_name||"PDP").replace(/[^\w&-]+/g,"_").slice(0,60)}_-_DRAFT.${ext}`;
+function save(blob,name){const a=el("a",{href:URL.createObjectURL(blob),download:name});document.body.append(a);a.click();a.remove()}
+$("dljson").onclick=()=>save(new Blob([JSON.stringify(doc,null,2)],{type:"application/json"}),fname("json"));
+$("ljson").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{doc=JSON.parse(r.result);render()};r.readAsText(f)};
+
+// --- xlsx export in the SEM submission-doc layout
+$("dl").onclick=async()=>{
+  if(overCount()&&!confirm("Some items are over the character limit. Download anyway?"))return;
+  const wb=new ExcelJS.Workbook();const B={bold:true},I={italic:true,color:{argb:"FF666666"}};
+  const pdp=`https://www.amazon.com/dp/${doc.asin}`;
+  const top=(ws,hl)=>{ws.getCell("B1").value="MMLR #";ws.getCell("B2").value=hl;const c=ws.getCell("B3");c.value=`DRAFT – generated from Amazon PDP ${doc.asin}; all copy pending MLR review`;c.font={bold:true,color:{argb:"FFC00000"}}};
+  const set=(ws,a,v,f)=>{const c=ws.getCell(a);c.value=v;if(f)c.font=f};
+  const widths=(ws,cols,w)=>cols.split("").forEach((c,i)=>ws.getColumn(c).width=w[i]);
+  // RSA
+  let ws=wb.addWorksheet("Responsive Search Ads");top(ws,"Highlight = New Component");let r=5;
+  doc.rsa.forEach(t=>{
+    ["Campaign Theme","Available Headlines","Characters","Pin to Headline Position","Available Description Lines","Characters","Pin to Description Line Position (i.e. 1 or 2, if applicable)","Display URL or Display Text","Claim source / MLR note"].forEach((v,i)=>set(ws,"BCDEGHIKL"[i]+r,v,B));
+    set(ws,"C"+(r+1),"(Character Limit: 30)",I);set(ws,"E"+(r+1),"(i.e. 1, 2, or 3, if applicable)",I);set(ws,"G"+(r+1),"(Character Limit: 90)",I);
+    r+=2;
+    const rows=Math.max(t.headlines.length,t.descriptions.length);
+    for(let i=0;i<rows;i++){
+      const h=t.headlines[i],d=t.descriptions[i],notes=[];
+      set(ws,"B"+r,t.theme);
+      if(h){set(ws,"C"+r,h.text);set(ws,"D"+r,len(h.text));if(h.note)notes.push(h.note)}
+      if(d){set(ws,"G"+r,d.text);set(ws,"H"+r,len(d.text));if(d.note)notes.push("Desc: "+d.note)}
+      if(i===0)set(ws,"K"+r,t.display_url);
+      if(notes.length)set(ws,"L"+r,[...new Set(notes)].join(" | "));
+      r++}
+    r++});
+  widths(ws,"BCDEGHIKL",[34,32,11,14,90,11,18,26,70]);
+  // Extensions
+  ws=wb.addWorksheet("Ad Extensions");top(ws,"Highlight = New Ads");
+  ["Sitelink Text","Sitelink Description Line 1","Sitelink Description Line 2","Destination URL","Note"].forEach((v,i)=>set(ws,"BEGIJ"[i]+5,v,B));
+  ["(Character Limit: 25)","(Character Limit: 35)","(Character Limit: 35)"].forEach((v,i)=>set(ws,"BEG"[i]+6,v,I));
+  r=7;
+  doc.sitelinks.forEach(s=>{set(ws,"B"+r,s.text);set(ws,"C"+r,len(s.text));set(ws,"E"+r,s.d1);set(ws,"F"+r,len(s.d1));set(ws,"G"+r,s.d2);set(ws,"H"+r,len(s.d2));set(ws,"I"+r,s.url);if(s.note)set(ws,"J"+r,s.note);r++});
+  r++;set(ws,"B"+r,"Callout Text",B);set(ws,"J"+r,"Note",B);set(ws,"B"+(r+1),"(Character Limit: 25)",I);r+=2;
+  doc.callouts.forEach(c=>{set(ws,"B"+r,c.text);set(ws,"C"+r,len(c.text));if(c.note)set(ws,"J"+r,c.note);r++});
+  widths(ws,"BCEFGHIJ",[28,6,36,6,36,6,40,60]);
+  // Keywords
+  ws=wb.addWorksheet("Keywords");top(ws,"Highlight = New Keywords");
+  ["Keyword Theme","Keyword","Landing Page","Ad Message","Note"].forEach((v,i)=>set(ws,"BCDEF"[i]+5,v,B));
+  r=6;
+  doc.keywords.forEach(g=>g.keywords.forEach(k=>{set(ws,"B"+r,g.theme);set(ws,"C"+r,k);set(ws,"D"+r,g.landing_page||pdp);set(ws,"E"+r,g.ad_message);if(g.note)set(ws,"F"+r,g.note);r++}));
+  widths(ws,"BCDEF",[36,40,38,22,70]);
+  const buf=await wb.xlsx.writeBuffer();
+  save(new Blob([buf],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}),fname("xlsx"));
+};
+</script>
+</body>
+</html>
